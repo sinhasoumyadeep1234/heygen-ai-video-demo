@@ -22,11 +22,15 @@ body{
 /* main div */
 #containerMain{
     max-width: 500px;
-    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
     background: #ffffff;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 12 25 rgba(0,0,0,0.8);
+    border: 0.1px solid blue;
 }
 
 /* main heading */
@@ -154,3 +158,13 @@ video{
     height: 26px;
 }
 
+/* New styles : 10/1/2026 */
+#voice-Preview{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.l{
+    text-decoration: none;
+    font-size: 15px;
+}
