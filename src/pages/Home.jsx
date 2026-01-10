@@ -10,6 +10,9 @@ import GeneratedVideoOutput from '../components/GeneratedVideoOutput';
 //importing all the api call functions created
 import { getAvatar,getVoice,createVideo,getVideoStatus } from '../api/script';
 
+import ScriptTypeSelector from '../components/ScriptTypeSelector'
+import TopicInput from '../components/TopicInput';
+import VideoLinkInput from '../components/VideoLinkInput';
 
 const Home = () => {
     //State to hold the avatars data(array of objects)
@@ -19,7 +22,7 @@ const Home = () => {
   const [voices,setVoices]=useState([]);
 
   //state to hold the user typed prompt: will be sent as props to the component UserScriptInput
-  const [text,setText]=useState("");
+  //const [text,setText]=useState("");
 
   //state to hold the avatar_id, will go as props(value,setValue) into UserSelectAvatar component
   const [avatarId,setAvatarId]=useState("");
@@ -33,10 +36,23 @@ const Home = () => {
   //state to hold the video url, will go as props(value,setValue) into GeneratedVideoOutput component
   const [videoUrl,setVideoUrl]=useState("");
 
-   //state to hold current user clicked url
-   const [audioPreviewUrl,setAudioPreviewUrl]=useState(null); 
+  //state to hold current user clicked url
+  const [audioPreviewUrl,setAudioPreviewUrl]=useState(null); 
     //adding a global audio element whose src will be the one user clicks to hear the sample audio. We have to pass this state and its updater function to the userselectvoice component so as to set this state with appropriate audio url.
 
+  
+
+   // state to hold the script type user selects and based on this state value we show diffrent components
+    const [scriptType,setScriptType]=useState("manual");//by default its manual
+
+
+  //set status of script generation by ai
+  const [statusTextScript,setStatustextScript]=useState("Script not generated yet..please wait");
+
+    
+  //state to hold the user typed prompt: will be sent as props to the component UserScriptInput..for every script there is this state finalScript
+  //state to handle and manage final script that goes for video creation
+  const [finalScript,setFinalScript]=useState("");
 
 
   //whenever our component loads for the first time we wanna make sure our avatar list and voice list is populated, so that user can select effectively
@@ -54,7 +70,7 @@ const Home = () => {
 
   async function handleGenerateVideo(){
     //checking if user has written anything/choose avatar/voice or not
-    if(!text || !avatarId || !voiceId){
+    if(!finalScript || !avatarId || !voiceId){
       alert("Please fill all the required fields and choose the avatar,voices if not done");
       return;
     }
@@ -74,7 +90,7 @@ const Home = () => {
                     },
                     voice: {
                         type:"text",
-                        input_text:text,
+                        input_text:finalScript,
                         voice_id:voiceId,    
                     },
                     background:{
@@ -117,14 +133,36 @@ const Home = () => {
     <div id='containerMain'>
           <h2 className='heading'>AI-Video-Generation-Website</h2>
 
-          <label className='label'>Enter Prompt</label>
-          {/* Adding the components and passing the appropriate props */}
-          <UserScriptInput text={text} setText={setText}/> <br/>
+          <h3 className='heading'>Step 1 : Choose your script type</h3>
 
-          
+           {/* based on the state scriptType we will show respective components for data input as user selects*/}
+          <ScriptTypeSelector value={scriptType} setValue={setScriptType}/>
+
+          {/* call different inputs based on state */}
+          {scriptType === "manual" && (
+              <UserScriptInput text={finalScript} setText={setFinalScript}/>
+          )}
+
+          {scriptType === "topic" && (
+            <TopicInput setText={setFinalScript} setStatustextScript={setStatustextScript}/>
+          )}
+
+          {scriptType === "video" && (
+            <VideoLinkInput setText={setFinalScript} setStatustextScript={setStatustextScript}/>
+          )}
+            
+          {/* status of generated text   */}
+          <h4>{statusTextScript}</h4>
+
+          {/* final text that goes to generate video*/}
+          <label className='label'>Final Script(Editable)</label>
+          <textarea value={finalScript} onChange={(e)=>setFinalScript(e.target.value)} rows={6} placeholder='Your final script appears here...'/>
+
+           <br/>
+          <h3 className='heading'>Step 2 : Select your avatar</h3>
           <UserSelectAvatar avatars={avatars} value={avatarId} setValue={setAvatarId}/> <br/>
 
-          
+          <h3 className='heading'>Step 3 : Select your desired voice(You can listen to the sample audio)</h3>
             <UserSelectVoice voices={voices} value={voiceId} setValue={setVoiceId} setAudioPreviewUrl={setAudioPreviewUrl}/> <br/>
           <h3>Click here to listen the sample voice</h3>
           {/* Global audio element for sample voice: add the state as key else the first selected audiopreviewurl selected as state value will remain permanent and will not change..key makes the component load when state changes.also for some voices there is no sample voice present hence dont show the audio player for them using conditionalrendering */}
@@ -132,6 +170,7 @@ const Home = () => {
           {audioPreviewUrl && (<audio key={audioPreviewUrl} id="voice-Preview" src={audioPreviewUrl} autoPlay controls/> )}
           
 
+          <h3 className='heading'>Step 4 : Click here to generate your video</h3>
           {/* button that will trigger the function handleGenerateVideo to start generation process with user entered data.  */}
           <button className='btn' onClick={handleGenerateVideo}>Generate your video</button> <br/>
 
