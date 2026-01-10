@@ -1,0 +1,156 @@
+*{
+   box-sizing: border-box;
+    font-family: 'Poppins',sans-serif;
+}
+
+body{
+    background: #f4f6f8;
+    margin: 0;
+    padding: 40px,0;
+}
+
+/* text area */
+#textIn{
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: none;   
+}
+
+/* main div */
+#containerMain{
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 12 25 rgba(0,0,0,0.8);
+}
+
+/* main heading */
+.heading{
+    text-align: center;
+    margin-bottom: 25px;
+    color:#222;
+}
+
+/* all labels */
+.label{
+    display: block;
+    margin: 15px 0 6px;
+    font-weight: 500;
+    color: #444;
+}
+
+/* select dropdowns */
+select{
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* generate button */
+.btn{
+    cursor: pointer;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #4f46e5;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+.btn:hover{
+    background: #4338ca;
+}
+
+/* status heading */
+.status{
+    margin-top: 15px;
+    font-weight: 500;
+    color:#555;
+    text-align: center;
+}
+
+/* video */
+video{
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+
+
+/* New updated styles */
+/* card to style the avatar new */
+
+/* as there are many avatars and voices hence we have to wrap them into a parent scrollable container */
+
+/* scroll area */
+.avatar-con{
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.card{
+    display: grid;
+    /* dislpay more as many avatars */
+    grid-template-columns: repeat(4,1fr);
+    gap: 8px;
+}
+
+
+.avatarCard{
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.avatarCard img{
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* selected class */
+.avatarCard.selected{
+   border-color: #22c55e;
+   background: #f0fdf4;
+}
+
+/* make scrollable as too many voices */
+.voiceCon{
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.voiceR{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.voiceR audio{
+    height: 26px;
+}
+
