@@ -1,6 +1,8 @@
 //logic to generate texts from AI goes here..as of now we are getting demo data from backend as API are not free
 
-const backendUrl="http://localhost:5000/api/script";
+// const backendUrl="http://localhost:5000/api/script";
+
+const backendUrl=import.meta.env.VITE_VERCEL_BACKEND_URL;
 
 //function to send post request to backend with user entered data and return back the generated result to the ui components(home)
 export async function generateScriptFromText(topic,tone) {

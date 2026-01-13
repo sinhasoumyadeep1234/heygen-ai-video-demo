@@ -1,4 +1,5 @@
 import {Routes, Route} from "react-router-dom"
+import { useState } from "react";
 import './App.css'
 
 
@@ -13,14 +14,17 @@ import Home from "./pages/Home";
 
 
 function App() {
- 
+ //state to hold the videogenerating true/false. And disable the button when video already generating
+  const [isGenerating,setIsgenerating]=useState(false);
+
   return (
     <>
-        {/* navbar component */}
-        <Navbar/>
+        {/* navbar component : passing isGenerating to disable navigation during video creation process */}
+        <Navbar isGenerating={isGenerating}/>
         {/* define the routes */}
         <Routes>
-            <Route path="/" element={<Home/>}/>
+          {/* passing the setter isGenerating to home to change the state accordingly when video creation is done/not done */}
+            <Route path="/" element={<Home isGenerating={isGenerating} setIsgenerating={setIsgenerating}/>}/>
             <Route path="/dashboard" element={<Dashboard/>}/>
         </Routes>
       

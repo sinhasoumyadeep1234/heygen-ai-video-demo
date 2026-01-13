@@ -11,12 +11,12 @@ body{
 
 /* text area */
 #textIn{
-    width: 100%;
-    height: 80px;
+    width: 440px;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    resize: none;   
+    margin-bottom: 20px;
+    cursor: pointer;   
 }
 
 /* main div */
@@ -56,6 +56,7 @@ select{
     border: 1px solid #ccc;
     margin-bottom: 10px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 /* generate button */
@@ -167,4 +168,43 @@ video{
 .l{
     text-decoration: none;
     font-size: 15px;
+}
+
+/* new styles 12/01/2026 */
+textarea{
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.dashBoardContainer{
+    max-width: 800px;
+    margin: auto;
+}
+
+.videoDashCon{
+    margin-bottom:20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 5px;
+    width:700px;
+    text-align: center;
+}
+
+.orBox{
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.vid{
+    width: 60%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 6px;
 }

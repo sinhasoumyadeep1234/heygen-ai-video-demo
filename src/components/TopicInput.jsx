@@ -12,15 +12,15 @@ export default function TopicInput({setText,setStatustextScript}){
     return(
         <>
             {/* input field for topic/product/service */}
-            <input placeholder="Enter your script topic/product/service here" onChange={(e)=>setTopic(e.target.value)} style={{width:"360px"}}/>
+            <input placeholder="Enter your script topic/product/service here" onChange={(e)=>setTopic(e.target.value)} id="textIn"/>
 
             {/* dropdown select for tone choice */}
             <select onChange={(e)=>setTone(e.target.value)}>
                 {/* options */}
-                <option value="casual">Casual</option>
-                <option value="professional">Professional</option>
-                <option value="energetic">Energetic</option>
-                <option value="educational">Educational</option>
+                <option value="casual">Tone : Casual</option>
+                <option value="professional">Tone : Professional</option>
+                <option value="energetic">Tone : Energetic</option>
+                <option value="educational">Tone  : Educational</option>
             </select>
 
             {/* button to send the data to the generatescript.js and further to backend */}

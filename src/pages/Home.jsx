@@ -14,7 +14,7 @@ import ScriptTypeSelector from '../components/ScriptTypeSelector'
 import TopicInput from '../components/TopicInput';
 import VideoLinkInput from '../components/VideoLinkInput';
 
-const Home = () => {
+const Home = ({isGenerating,setIsgenerating}) => {
     //State to hold the avatars data(array of objects)
   const [avatars,setAvatars]=useState([]);
 
@@ -47,12 +47,19 @@ const Home = () => {
 
 
   //set status of script generation by ai
-  const [statusTextScript,setStatustextScript]=useState("Script not generated yet..please wait");
+  const [statusTextScript,setStatustextScript]=useState("Script not generated yet..please type something to generate");
 
     
   //state to hold the user typed prompt: will be sent as props to the component UserScriptInput..for every script there is this state finalScript
   //state to handle and manage final script that goes for video creation
   const [finalScript,setFinalScript]=useState("");
+
+
+  //state to hold the video orientation details/dimension
+  const [orientation,setOrientation]=useState("");
+
+
+  
 
 
   //whenever our component loads for the first time we wanna make sure our avatar list and voice list is populated, so that user can select effectively
@@ -70,16 +77,34 @@ const Home = () => {
 
   async function handleGenerateVideo(){
     //checking if user has written anything/choose avatar/voice or not
-    if(!finalScript || !avatarId || !voiceId){
-      alert("Please fill all the required fields and choose the avatar,voices if not done");
+    if(!finalScript || !avatarId || !voiceId || !orientation){
+      alert("Please fill all the required fields and choose the avatar,voices,video orientation if not done");
       return;
     }
 
+    //if input is too short
+    if(finalScript.length<10 || finalScript.length>200){
+      alert("Script is either too short or too long to process(Tip: Keep the script short to avoid loosing credits)");
+      return;
+    }
+
+    //update : 12/01/26 : set the dimension of the video to pass it during video creation request
+    const dimension = orientation==="horizontal" ? {width:1280,height:720} : {width:720,height:1280};
+
+    //replace this with dimension entry in video input's dimesion..previously we were sending horizontal specs by default.
+
+
     //else show status generating video
     setStatus("Generating video..please wait⌛");
+
+    //video generation status for button
+    setIsgenerating(true);
+
     setVideoUrl("");
 
-    //now sending the request of creating the video with the user data(in object format)
+
+    try{
+            //now sending the request of creating the video with the user data(in object format)
     const res=await createVideo({
       video_inputs:[
                 {
@@ -98,10 +123,8 @@ const Home = () => {
                         value:"#FFFFFF",
                     },
                 } ,   
-            ],dimension:{
-                width:1280,
-                height:720,
-            },});
+            ],dimension,
+            });
 
             //now matter video generation is successful or not we get a video_id thus extracting the video_id
             const videoId=res.data.video_id;
@@ -116,17 +139,41 @@ const Home = () => {
 
               //if completed : update the url and finish
               if(statusCondition.data.status === "completed"){
+
+                //update : save the latest created video details by user to the localstorage(so as to show them in the dashboard)..created an object to store the video details we need
+                const newVideo={
+                  url:statusCondition.data.video_url,
+                  createdAt:new Date().toISOString(), //as we need date in string format
+                  orientation,
+                };
+
+                //get the list of existing videos in localstorage if any(after 2-3 use) or create an empty array
+                const existingVideos = JSON.parse(localStorage.getItem("videos")) || [];
+
+                // set the current video object to it
+                localStorage.setItem("videos",JSON.stringify([newVideo,...existingVideos]));
+
+                //now modifying dashboad.jsx to handle this case
+
+
+
                 setVideoUrl(statusCondition.data.video_url);
-                setStatus("Video generated successfully");
+                setStatus("Video generated successfully✅");
                 break;
               }
 
               //if pending then loop will continue....else if status is failed then break
               if(statusCondition.data.status === "failed"){
-                setStatus("Sorry..video generation failed");
+                setStatus("Sorry..video generation failed❌");
                 break;
               }
             }
+    }catch(err){
+      setStatus("Something went wrong ❌");
+    }finally{
+      setIsgenerating(false); //no matter what change the status to false at end
+    }
+
   }
 
   return (
@@ -140,15 +187,15 @@ const Home = () => {
 
           {/* call different inputs based on state */}
           {scriptType === "manual" && (
-              <UserScriptInput text={finalScript} setText={setFinalScript}/>
+              <UserScriptInput text={finalScript} setText={setFinalScript} disabled={isGenerating}/>
           )}
 
           {scriptType === "topic" && (
-            <TopicInput setText={setFinalScript} setStatustextScript={setStatustextScript}/>
+            <TopicInput setText={setFinalScript} setStatustextScript={setStatustextScript} disabled={isGenerating}/>
           )}
 
           {scriptType === "video" && (
-            <VideoLinkInput setText={setFinalScript} setStatustextScript={setStatustextScript}/>
+            <VideoLinkInput setText={setFinalScript} setStatustextScript={setStatustextScript} disabled={isGenerating}/>
           )}
             
           {/* status of generated text   */}
@@ -160,19 +207,31 @@ const Home = () => {
 
            <br/>
           <h3 className='heading'>Step 2 : Select your avatar</h3>
-          <UserSelectAvatar avatars={avatars} value={avatarId} setValue={setAvatarId}/> <br/>
+          <UserSelectAvatar avatars={avatars} value={avatarId} setValue={setAvatarId} disabled={isGenerating}/> <br/>
 
           <h3 className='heading'>Step 3 : Select your desired voice(You can listen to the sample audio)</h3>
-            <UserSelectVoice voices={voices} value={voiceId} setValue={setVoiceId} setAudioPreviewUrl={setAudioPreviewUrl}/> <br/>
-          <h3>Click here to listen the sample voice</h3>
+            <UserSelectVoice voices={voices} value={voiceId} setValue={setVoiceId} setAudioPreviewUrl={setAudioPreviewUrl} disabled={isGenerating}/> <br/>
+          <h3 className='heading'>Click on the voice from above list to play the sample voice here</h3>
           {/* Global audio element for sample voice: add the state as key else the first selected audiopreviewurl selected as state value will remain permanent and will not change..key makes the component load when state changes.also for some voices there is no sample voice present hence dont show the audio player for them using conditionalrendering */}
 
           {audioPreviewUrl && (<audio key={audioPreviewUrl} id="voice-Preview" src={audioPreviewUrl} autoPlay controls/> )}
           
+          {/* video dimension selector for ratio of the video */}
+          <h3 className='heading'>Step 4 : Choose video orientation</h3>
+          <div className='orBox'>
+              <label>
+                <input type="radio" value="horizontal" checked={orientation==="horizontal"} onChange={(e)=>setOrientation(e.target.value)}/> Horizontal (16:9)
+              </label>
+              <label>
+                <input type='radio' value="vertical" checked={orientation==="vertical"} onChange={(e)=>setOrientation(e.target.value)}/> Vertical (9:16)
+              </label>
+          </div>
 
-          <h3 className='heading'>Step 4 : Click here to generate your video</h3>
-          {/* button that will trigger the function handleGenerateVideo to start generation process with user entered data.  */}
-          <button className='btn' onClick={handleGenerateVideo}>Generate your video</button> <br/>
+
+
+          <h3 className='heading'>Step 5 : Click here to generate your video</h3>
+          {/* button that will trigger the function handleGenerateVideo to start generation process with user entered data. Update 12/01/2026 : Disable the button if already generating a video */}
+          <button className='btn' disabled={isGenerating} onClick={handleGenerateVideo} >{isGenerating ? "Generating..." : "Generate your video"}</button> <br/>
 
           {/* showing video generation status only when there is some status..i.e. conditional rendering */}
           {status && <h4 className='status'>{status}</h4>} <br/>
